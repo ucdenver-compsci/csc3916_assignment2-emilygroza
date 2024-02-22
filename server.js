@@ -58,7 +58,7 @@ router.post('/signup', (req, res) => {
 router.post('/signin', (req, res) => {
     var user = db.findOne(req.body.username);
 
-    if (!user) {
+    if (!user) {                                          
         res.status(401).send({success: false, msg: 'Authentication failed. User not found.'});
     } else {
         if (req.body.password == user.password) {
@@ -93,7 +93,46 @@ router.route('/testcollection')
         res.json(o);
     }
     );
-    
+
+router.route('/movies')
+    .get((req, res) => {
+        //implement
+        var o = getJSONObjectForMovieRequirement(req);
+        o.status = 200;
+        o.message = "GET movies";
+        res.json(o);
+    })
+    .post((req, res) => {
+        //implement
+        var o = getJSONObjectForMovieRequirement(req);
+        o.status = 200;
+        o.message = "movie saved";
+        res.json(o);
+    })
+    .put(authJwtController.isAuthenticated, (req, res) => {
+        //http put method
+        //requires jwt auth
+        //returns a json object w status, msg, headers, query, env
+        var o = getJSONObjectForMovieRequirement(req);
+        o.status = 200;
+        o.message = "movie updated";
+        res.json(o);
+    })
+    .delete(authController.isAuthenticated, (req, res) => {
+        //http delete method
+        //requires basic auth
+        //returns json object w status, msg, headers, query, env
+        var o = getJSONObjectForMovieRequirement(req);
+        o.status = 200;
+        o.message = "movie deleted";
+        res.json(o);
+    })
+    .all((req, res) => {
+        //any other http method
+        //returns a msg stating that the http method is unsupported
+        res.status(405).send({ message: 'HTTP method not supported.'})
+    });
+
 app.use('/', router);
 app.listen(process.env.PORT || 8080);
 module.exports = app; // for testing only
